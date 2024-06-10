@@ -1,27 +1,31 @@
 package main
 
 import (
+	"database/sql"
 	"errors"
+	"fmt"
 	"net/http"
+	"os"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
-	matcher, err := NewResquetMatcherLive()
+	db, err := sql.Open("sqlite3", "./data/local.db")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to open db %s", err)
+		os.Exit(1)
+	}
+	defer db.Close()
 	if err != nil {
 		panic(err)
 	}
-	http.Handle("/", &MapHandler{matcher: matcher})
+	http.Handle("/", &MapHandler{matcher: &RequestMatcherLive{db: db}})
 
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":3000", nil)
 }
 
 var errRespNotFound = errors.New("response not found")
-
-type Resp struct {
-	Headers map[string]string
-	Body    []byte
-	Status  int
-}
 
 type RequestMatcher interface {
 	Match(url, method string) (*Resp, error)
