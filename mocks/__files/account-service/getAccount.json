@@ -1,0 +1,25 @@
+{
+  "_id": "jEVtyte3T3mIfzEwxpgd8",
+  "bu": "BENEFITS",
+  "externalId": "_mu62GIQHIwAM9ontQbJr",
+  "accounts": [
+    {
+      "product": "CREDIT_CARD_PRE_PAID",
+      "provider": "ACG_PISMO",
+      "providerAccountId": "117365632",
+      "active": false
+    },
+    {
+      "product": "CREDIT_CARD_PRE_PAID",
+      "provider": "FLASH_PISMO",
+      "providerAccountId": "117365637",
+      "activatedAt": "2024-01-02T17:09:45.327Z",
+      "active": true
+    }
+  ],
+  "customer": {
+    "name": "blash silva",
+    "type": "PERSONAL",
+    "documentNumber": "18797355470"
+  }
+}
