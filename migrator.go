@@ -29,6 +29,7 @@ func NewMigrator(db *sql.DB, dir string) (*Migrator, error) {
 
 func NewMigratorEmbed(db *sql.DB) (*Migrator, error) {
 	err := goose.SetDialect("sqlite3")
+	goose.SetLogger(goose.NopLogger())
 	goose.SetBaseFS(migrations)
 	if err != nil {
 		return nil, err
