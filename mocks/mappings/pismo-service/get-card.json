@@ -1,0 +1,39 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "urlPath": "/v1/card",
+        "queryParameters": {
+          "externalId": {
+            "equalTo": "A10000301"
+          },
+          "product": {
+            "matches": ".*"
+          }
+        },
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "bodyFileName": "pismo-service/getCardProducts.json"
+      }
+    },
+    {
+      "priority": 10,
+      "request": {
+        "urlPattern": "/v1/card?.*",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "bodyFileName": "pismo-service/getCards.json"
+      }
+    }
+  ]
+}

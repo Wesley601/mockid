@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io/fs"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 )
@@ -19,7 +20,7 @@ type RequestMatcherLive struct {
 	db *sql.DB
 }
 
-func (m *RequestMatcherLive) Match(url, method string) (*Resp, error) {
+func (m *RequestMatcherLive) Match(r *http.Request) (*Resp, error) {
 	var files [][]byte
 	paths, err := GetMappingPath()
 	if err != nil {
@@ -41,13 +42,13 @@ func (m *RequestMatcherLive) Match(url, method string) (*Resp, error) {
 			return nil, err
 		}
 		for _, mapping := range data.Mappings {
-			if mapping.Request.Match(url, method) {
+			if mapping.Request.Match(r) {
 				response, err := mapping.Response.GetBody()
 				if err != nil {
 					return nil, err
 				}
 				_, err = m.db.Exec("INSERT INTO requests(requested_path, requested_method, matched_path, response_body, response_status) VALUES(?, ?, ?, ?, ?)",
-					url, method, mapping.Request.URLPattern, string(response), mapping.Response.Status)
+					r.URL.Path, r.Method, mapping.Request.URLPattern, string(response), mapping.Response.Status)
 				if err != nil {
 					log.Printf("Unable to insert on requests table, %s\n", err.Error())
 				}

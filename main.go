@@ -3,9 +3,8 @@ package main
 import (
 	"database/sql"
 	"errors"
-	"fmt"
+	"log"
 	"net/http"
-	"os"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -13,22 +12,26 @@ import (
 func main() {
 	db, err := sql.Open("sqlite3", "./data/local.db")
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to open db %s", err)
-		os.Exit(1)
+		panic(err)
 	}
 	defer db.Close()
+	m, err := NewMigratorEmbed(db)
 	if err != nil {
+		panic(err)
+	}
+	if err := m.Up(); err != nil {
 		panic(err)
 	}
 	http.Handle("/", &MapHandler{matcher: &RequestMatcherLive{db: db}})
 
-	http.ListenAndServe(":3000", nil)
+	log.Println("Server starting at :3000")
+	log.Fatalln(http.ListenAndServe(":3000", nil))
 }
 
 var errRespNotFound = errors.New("response not found")
 
 type RequestMatcher interface {
-	Match(url, method string) (*Resp, error)
+	Match(r *http.Request) (*Resp, error)
 }
 
 type MapHandler struct {
@@ -36,9 +39,7 @@ type MapHandler struct {
 }
 
 func (m *MapHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	url := r.URL.Path
-	method := r.Method
-	resp, err := m.matcher.Match(url, method)
+	resp, err := m.matcher.Match(r)
 	if err != nil {
 		if errors.Is(err, errRespNotFound) {
 			w.WriteHeader(http.StatusNotFound)

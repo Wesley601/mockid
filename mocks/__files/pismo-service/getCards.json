@@ -1,0 +1,14 @@
+[
+  {
+    "_id": "TptOVMD1WTBw8h3sjvrlN",
+    "createdAt": "2023-06-02T18:19:55.632Z",
+    "updatedAt": "2023-06-02T18:19:55.632Z",
+    "cardId": "22827032",
+    "externalId": "A10000301",
+    "bulkId": "5e418e54-82d5-467a-82ba-1323c0525dfb",
+    "programId": "12303",
+    "product": "CREDIT_PRE_PAID",
+    "type": "PLASTIC",
+    "status": "UNBOUND"
+  }
+]

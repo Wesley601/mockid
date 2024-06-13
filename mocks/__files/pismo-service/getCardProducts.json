@@ -1,0 +1,38 @@
+[
+  {
+    "_id": "TptOVMD1WTBw8h3sjvrlN",
+    "createdAt": "2023-06-02T18:19:55.632Z",
+    "updatedAt": "2023-06-02T18:19:55.632Z",
+    "cardId": "22827032",
+    "externalId": "A10000301",
+    "bulkId": "5e418e54-82d5-467a-82ba-1323c0525dfb",
+    "programId": "12303",
+    "product": "CREDIT_PRE_PAID",
+    "type": "PLASTIC",
+    "status": "UNBOUND"
+  },
+  {
+    "_id": "OrDCtiYqPIzfTRC0yNUtK",
+    "createdAt": "2023-06-02T18:19:55.694Z",
+    "updatedAt": "2023-06-02T18:19:55.694Z",
+    "cardId": "22827034",
+    "externalId": "A10000301",
+    "bulkId": "75ec8190-eb82-4106-bb18-ea3b76276bfb",
+    "programId": "13011",
+    "product": "DEBIT",
+    "type": "PLASTIC",
+    "status": "UNBOUND"
+  },
+  {
+    "_id": "aRJ5BGVeEbbRCa9RBjqmJ",
+    "createdAt": "2023-06-02T18:19:57.430Z",
+    "updatedAt": "2023-06-02T18:19:57.430Z",
+    "cardId": "22827037",
+    "externalId": "A10000301",
+    "bulkId": "26e87f51-d447-463c-a1c3-76cd8368ad06",
+    "programId": "13012",
+    "product": "VOUCHER",
+    "type": "PLASTIC",
+    "status": "UNBOUND"
+  }
+]

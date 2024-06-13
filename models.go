@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net/http"
 	"os"
 	"path"
 	"regexp"
@@ -15,13 +16,46 @@ type Mapping struct {
 	Response Response `json:"response"`
 }
 
-type Request struct {
-	Method     string `json:"method"`
-	URLPattern string `json:"urlPattern"`
+type QueryParam struct {
+	EqualTo string `json:"equalTo"`
+	Matches string `json:"matches"`
 }
 
-func (r Request) Match(url, method string) bool {
-	return r.Method == method && Must(regexp.MatchString(r.URLPattern, url))
+type Request struct {
+	Method          string                `json:"method"`
+	URLPath         string                `json:"urlPath"`
+	URLPattern      string                `json:"urlPattern"`
+	QueryParameters map[string]QueryParam `json:"queryParameters"`
+}
+
+func (r Request) Match(res *http.Request) bool {
+	if r.Method != res.Method {
+		return false
+	}
+	if len(r.QueryParameters) != 0 {
+		for k, v := range r.QueryParameters {
+			param := res.URL.Query().Get(k)
+			if v.EqualTo != "" {
+				if v.EqualTo != param {
+					return false
+				}
+			}
+			if v.Matches != "" {
+				if !Must(regexp.MatchString(v.Matches, param)) {
+					return false
+				}
+			}
+		}
+	}
+	if r.URLPath != "" {
+		if r.URLPath != res.URL.Path {
+			return false
+		}
+	}
+	if !Must(regexp.MatchString(r.URLPattern, res.URL.Path)) {
+		return false
+	}
+	return true
 }
 
 type Response struct {
