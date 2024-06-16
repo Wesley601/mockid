@@ -22,6 +22,44 @@ func main() {
 	if err := m.Up(); err != nil {
 		panic(err)
 	}
+	http.HandleFunc("GET /_/requests", func(w http.ResponseWriter, r *http.Request) {
+		var requests []RequestSaved
+		rows, err := db.Query("SELECT id, requested_path, requested_method, matched_path, response_body, response_status FROM requests;")
+		if err != nil {
+			log.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var request RequestSaved
+			if err := request.Scan(rows); err != nil {
+				log.Println(err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			requests = append(requests, request)
+		}
+		Base(Home(requests)).Render(r.Context(), w)
+	})
+
+	http.HandleFunc("GET /_/requests/{id}", func(w http.ResponseWriter, r *http.Request) {
+		var request RequestSaved
+		row := db.QueryRow("SELECT id, requested_path, requested_method, matched_path, response_body, response_status FROM requests WHERE id=?", r.PathValue("id"))
+		if err != nil {
+			log.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if err := request.Scan(row); err != nil {
+			log.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		Show(request).Render(r.Context(), w)
+	})
+
 	http.Handle("/", &MapHandler{matcher: &RequestMatcherLive{db: db}})
 
 	log.Println("Server starting at :3000")
