@@ -7,7 +7,8 @@ TODO
 - [x] implement integration tests
 - [x] create db file if not exists on bootstrap
 - [x] implement env vars
-- [] dockerize the application
+- [x] dockerize the application
+- [] refactor the application
 - [] implement cached matcher
 - [] implement flush method
 - [] add more url mappings through the web interface
