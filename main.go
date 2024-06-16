@@ -1,27 +1,23 @@
 package main
 
 import (
-	"database/sql"
 	"errors"
 	"log"
 	"net/http"
-
-	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
-	db, err := sql.Open("sqlite3", "./data/local.db")
+	if err := app("./data/local.db"); err != nil {
+		log.Fatalln(err)
+	}
+}
+
+func app(dbPath string) error {
+	db, err := StartDB(dbPath)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	defer db.Close()
-	m, err := NewMigratorEmbed(db)
-	if err != nil {
-		panic(err)
-	}
-	if err := m.Up(); err != nil {
-		panic(err)
-	}
 	http.HandleFunc("GET /_/requests", func(w http.ResponseWriter, r *http.Request) {
 		var requests []RequestSaved
 		rows, err := db.Query("SELECT id, requested_path, requested_method, matched_path, response_body, response_status FROM requests;")
@@ -63,7 +59,7 @@ func main() {
 	http.Handle("/", &MapHandler{matcher: &RequestMatcherLive{db: db}})
 
 	log.Println("Server starting at :3000")
-	log.Fatalln(http.ListenAndServe(":3000", nil))
+	return http.ListenAndServe(":3000", nil)
 }
 
 var errRespNotFound = errors.New("response not found")

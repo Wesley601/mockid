@@ -66,7 +66,11 @@ type Response struct {
 }
 
 func (r Response) GetBody() ([]byte, error) {
-	fullPath := path.Join("./mocks/__files/", r.BodyFileName)
+	return GetBody(r.BodyFileName)
+}
+
+func GetBody(bodyFileName string) ([]byte, error) {
+	fullPath := path.Join("./mocks/__files/", bodyFileName)
 	response, err := os.ReadFile(fullPath)
 	if err != nil {
 		return nil, err
