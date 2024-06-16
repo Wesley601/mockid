@@ -6,6 +6,13 @@ import (
 	"net/http"
 )
 
+func init() {
+	err := EnsureDBFile("./data/local.db")
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 func main() {
 	if err := app("./data/local.db"); err != nil {
 		log.Fatalln(err)
