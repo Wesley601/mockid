@@ -4,17 +4,25 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"os"
+
+	"github.com/joho/godotenv"
 )
 
 func init() {
-	err := EnsureDBFile("./data/local.db")
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = EnsureDBFile(os.Getenv("DB_PATH"))
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
 func main() {
-	if err := app("./data/local.db"); err != nil {
+	if err := app(os.Getenv("DB_PATH")); err != nil {
 		log.Fatalln(err)
 	}
 }

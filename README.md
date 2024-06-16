@@ -6,7 +6,7 @@ TODO
 ```
 - [x] implement integration tests
 - [x] create db file if not exists on bootstrap
-- [] implement env vars
+- [x] implement env vars
 - [] dockerize the application
 - [] implement cached matcher
 - [] implement flush method
