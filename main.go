@@ -10,13 +10,14 @@ import (
 )
 
 func init() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal(err)
+	if os.Getenv("GO_ENV") != "PROD" {
+		err := godotenv.Load()
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
-	err = EnsureDBFile(os.Getenv("DB_PATH"))
-	if err != nil {
+	if err := EnsureDBFile(os.Getenv("DB_PATH")); err != nil {
 		log.Fatal(err)
 	}
 }
