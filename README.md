@@ -11,6 +11,6 @@ TODO
 - [] refactor the application
 - [] implement cached matcher
 - [] implement flush method
-- [] add more url mappings through the web interface
+- [] be able to add more url mappings through the web interface
 - [] replace bootstrap for something more lightweight
 ```
