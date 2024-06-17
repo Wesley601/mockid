@@ -1,6 +1,8 @@
-package main
+package views
 
-templ Show(request RequestSaved) {
+import "github.com/wesley601/mockid/db"
+
+templ Show(request db.RequestSaved) {
   <div class="modal-dialog modal-dialog-centered">
   <div class="modal-content">
     <div class="modal-header">

@@ -1,14 +1,20 @@
-package main
+package services
 
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"io/fs"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/wesley601/mockid/db"
+	"github.com/wesley601/mockid/entities"
 )
+
+var ErrRespNotFound = errors.New("response not found")
 
 type Resp struct {
 	Headers map[string]string
@@ -16,8 +22,20 @@ type Resp struct {
 	Status  int
 }
 
+type RequestDAO interface {
+	Create(db.RequestSaved) error
+}
+
 type RequestMatcherLive struct {
-	db *sql.DB
+	db  *sql.DB
+	dao RequestDAO
+}
+
+func NewRequestMatcherLive(db *sql.DB, dao RequestDAO) *RequestMatcherLive {
+	return &RequestMatcherLive{
+		db:  db,
+		dao: dao,
+	}
 }
 
 func (m *RequestMatcherLive) Match(r *http.Request) (*Resp, error) {
@@ -36,7 +54,7 @@ func (m *RequestMatcherLive) Match(r *http.Request) (*Resp, error) {
 	}
 
 	for _, file := range files {
-		var data Mappings
+		var data entities.Mappings
 		err := json.Unmarshal(file, &data)
 		if err != nil {
 			return nil, err
@@ -47,11 +65,14 @@ func (m *RequestMatcherLive) Match(r *http.Request) (*Resp, error) {
 				if err != nil {
 					return nil, err
 				}
-				_, err = m.db.Exec("INSERT INTO requests(requested_path, requested_method, matched_path, response_body, response_status) VALUES(?, ?, ?, ?, ?)",
-					r.URL.Path, r.Method, mapping.Request.URLPattern, string(response), mapping.Response.Status)
-				if err != nil {
-					log.Printf("Unable to insert on requests table, %s\n", err.Error())
-				}
+
+				m.dao.Create(db.RequestSaved{
+					RequestedPath:   r.URL.Path,
+					RequestedMethod: r.Method,
+					MatchedPath:     mapping.Request.URLPattern,
+					ResponseBody:    string(response),
+					ResponseStatus:  mapping.Response.Status,
+				})
 				return &Resp{
 					Status:  mapping.Response.Status,
 					Headers: mapping.Response.Headers,
@@ -61,7 +82,7 @@ func (m *RequestMatcherLive) Match(r *http.Request) (*Resp, error) {
 		}
 	}
 
-	return nil, errRespNotFound
+	return nil, ErrRespNotFound
 }
 
 func GetMappingPath() ([]string, error) {

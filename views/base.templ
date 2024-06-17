@@ -1,4 +1,4 @@
-package main
+package views
 
 
 templ Base(component templ.Component) {
@@ -12,14 +12,14 @@ templ Base(component templ.Component) {
     <title>Mockid</title>
   </head>
   <body>
-  <nav class="navbar bg-body-tertiary">
+  <nav class="navbar navbar-dark bg-dark">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">Mockid</a>
     </div>
   </nav>
-    <div class="container px-4">
+    <main class="container px-4 mt-4">
       @component
-    </div>
+    </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
   </body>
   </html>

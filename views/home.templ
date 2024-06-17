@@ -1,8 +1,9 @@
-package main
+package views
 
 import "fmt"
+import "github.com/wesley601/mockid/db"
 
-templ Home(requests []RequestSaved) {
+templ Home(requests []db.RequestSaved) {
   <div>
     <table class="table">
       <thead>
@@ -23,7 +24,7 @@ templ Home(requests []RequestSaved) {
           <td>{ request.MatchedPath }</td>
           <td>
             <button
-              hx-get={ fmt.Sprintf("/_/%d", request.ID) }
+              hx-get={ fmt.Sprintf("/_/requests/%d", request.ID) }
               hx-target="#modals-here"
               hx-trigger="click"
               data-bs-toggle="modal"

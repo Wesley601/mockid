@@ -2,13 +2,16 @@
 
 a simple way to mock your external requests
 
+![A mushroom-head robot](/assets/under-construction.gif 'WIP')
+
+
 TODO
 ```
 - [x] implement integration tests
 - [x] create db file if not exists on bootstrap
 - [x] implement env vars
 - [x] dockerize the application
-- [] refactor the application
+- [x] refactor the application
 - [] implement cached matcher
 - [] implement flush method
 - [] be able to add more url mappings through the web interface

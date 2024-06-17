@@ -1,19 +1,28 @@
-package main
+package handlers_test
 
 import (
-	"database/sql"
-	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/wesley601/mockid/db"
+	"github.com/wesley601/mockid/entities"
+	"github.com/wesley601/mockid/handlers"
+	"github.com/wesley601/mockid/services"
+	"github.com/wesley601/mockid/utils"
 )
 
+func init() {
+	utils.SetToRoot("..")
+}
+
 func Test_Matcher(t *testing.T) {
-	db, err := StartDB(":memory:")
+	conn, err := db.StartDB(":memory:")
 	if err != nil {
 		panic(err)
 	}
-	handler := &MapHandler{matcher: &RequestMatcherLive{db: db}}
+	requestDAO := db.NewRequestDAO(conn)
+	handler := handlers.NewMapHandler(services.NewRequestMatcherLive(conn, requestDAO))
 
 	testCases := []struct {
 		request  *http.Request
@@ -24,7 +33,7 @@ func Test_Matcher(t *testing.T) {
 		desc string
 	}{
 		{
-			request: Must(http.NewRequest(http.MethodGet, "/accounts/1", nil)),
+			request: utils.Must(http.NewRequest(http.MethodGet, "/accounts/1", nil)),
 			response: struct {
 				filePath string
 				code     int
@@ -35,7 +44,7 @@ func Test_Matcher(t *testing.T) {
 			desc: "should match the url",
 		},
 		{
-			request: Must(http.NewRequest(http.MethodGet, "/v1/card?externalId=A10000301&product=stub", nil)),
+			request: utils.Must(http.NewRequest(http.MethodGet, "/v1/card?externalId=A10000301&product=stub", nil)),
 			response: struct {
 				filePath string
 				code     int
@@ -52,9 +61,9 @@ func Test_Matcher(t *testing.T) {
 			response := httptest.NewRecorder()
 			handler.ServeHTTP(response, tC.request)
 			got := response.Body.String()
-			want, err := GetBody(tC.response.filePath)
+			want, err := entities.GetBody(tC.response.filePath)
 			if err != nil {
-				t.Errorf("unable to get the file response from %q", tC.response)
+				t.Errorf("unable to get the file response from %q\n err: %q", tC.response, err.Error())
 				return
 			}
 
@@ -70,25 +79,25 @@ func Test_Matcher(t *testing.T) {
 }
 
 func Test_SaveMatcher(t *testing.T) {
-	db, err := StartDB(":memory:")
+	conn, err := db.StartDB(":memory:")
 	if err != nil {
 		panic(err)
 	}
-	handler := &MapHandler{matcher: &RequestMatcherLive{db: db}}
+	requestDAO := db.NewRequestDAO(conn)
+
+	handler := handlers.NewMapHandler(services.NewRequestMatcherLive(conn, requestDAO))
 
 	t.Run("should save the request in the database", func(t *testing.T) {
 		response := httptest.NewRecorder()
-		handler.ServeHTTP(response, Must(http.NewRequest(http.MethodGet, "/accounts/1", nil)))
+		handler.ServeHTTP(response, utils.Must(http.NewRequest(http.MethodGet, "/accounts/1", nil)))
 
-		var request RequestSaved
-		row := db.QueryRow("SELECT id, requested_path, requested_method, matched_path, response_body, response_status FROM requests;")
-
-		if request.Scan(row) != nil {
-			if errors.Is(err, sql.ErrNoRows) {
-				t.Errorf("the request was not saved on the database")
-			} else {
-				t.Errorf("something went wrong %q", err.Error())
-			}
+		requests, err := requestDAO.List()
+		if err != nil {
+			t.Errorf("something went wrong %q", err.Error())
+			return
+		}
+		if len(requests) == 0 {
+			t.Errorf("the request was not saved on the database")
 		}
 	})
 }
