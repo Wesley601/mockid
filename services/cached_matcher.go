@@ -3,7 +3,6 @@ package services
 import (
 	"database/sql"
 	"encoding/json"
-	"errors"
 	"log"
 	"net/http"
 	"os"
@@ -12,48 +11,40 @@ import (
 	"github.com/wesley601/mockid/entities"
 )
 
-var ErrRespNotFound = errors.New("response not found")
-
-type Resp struct {
-	Headers map[string]string
-	Body    []byte
-	Status  int
+type RequestMatcherCached struct {
+	db   *sql.DB
+	data []entities.Mappings
+	dao  RequestDAO
 }
 
-type RequestDAO interface {
-	Create(db.RequestSaved) error
-}
-
-type RequestMatcherLive struct {
-	db  *sql.DB
-	dao RequestDAO
-}
-
-func NewRequestMatcherLive(db *sql.DB, dao RequestDAO) *RequestMatcherLive {
-	return &RequestMatcherLive{
+func NewRequestMatcherCached(db *sql.DB, dao RequestDAO) (*RequestMatcherCached, error) {
+	matcher := RequestMatcherCached{
 		db:  db,
 		dao: dao,
 	}
-}
-
-func (m *RequestMatcherLive) Match(r *http.Request) (*Resp, error) {
 	paths, err := getMappingPath()
 	if err != nil {
 		return nil, err
 	}
-	for _, path := range paths {
-		file, err := os.ReadFile(path)
+	for _, v := range paths {
+		dat, err := os.ReadFile(v)
 		if err != nil {
-			log.Printf("Unable to read the file %s: %s\n", path, err.Error())
+			log.Printf("Unable to read the file %s: %s\n", v, err.Error())
 			continue
 		}
-
 		var data entities.Mappings
-		err = json.Unmarshal(file, &data)
+		err = json.Unmarshal(dat, &data)
 		if err != nil {
 			return nil, err
 		}
+		matcher.data = append(matcher.data, data)
+	}
 
+	return &matcher, nil
+}
+
+func (m *RequestMatcherCached) Match(r *http.Request) (*Resp, error) {
+	for _, data := range m.data {
 		for _, mapping := range data.Mappings {
 			if mapping.Request.Match(r) {
 				response, err := mapping.Response.GetBody()

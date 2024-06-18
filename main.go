@@ -37,11 +37,21 @@ func app(dbPath string) error {
 	}
 	defer conn.Close()
 
+	var matcher handlers.RequestMatcher
 	requestDAO := db.NewRequestDAO(conn)
+
+	if utils.Env("CACHED", "no") == "yes" {
+		matcher, err = services.NewRequestMatcherCached(conn, requestDAO)
+		if err != nil {
+			return err
+		}
+	} else {
+		matcher = services.NewRequestMatcherLive(conn, requestDAO)
+	}
 	requestHandler := handlers.NewRequestHandler(conn, requestDAO)
 	http.HandleFunc("GET /_/requests", requestHandler.Index)
 	http.HandleFunc("GET /_/requests/{id}", requestHandler.Show)
-	http.Handle("/", handlers.NewMapHandler(services.NewRequestMatcherLive(conn, requestDAO)))
+	http.Handle("/", handlers.NewMapHandler(matcher))
 
 	log.Println("Server starting at :3000")
 	return http.ListenAndServe(":3000", nil)
