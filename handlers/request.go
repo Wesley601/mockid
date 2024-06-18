@@ -21,9 +21,10 @@ type RequestHandler struct {
 	dao RequestDAO
 }
 
-func NewRequestHandler(db *sql.DB) *RequestHandler {
+func NewRequestHandler(db *sql.DB, dao RequestDAO) *RequestHandler {
 	return &RequestHandler{
-		db: db,
+		db:  db,
+		dao: dao,
 	}
 }
 

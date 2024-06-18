@@ -20,9 +20,9 @@ func (r *RequestDAO) Create(rr RequestSaved) error {
 	return err
 }
 
-func (r *RequestDAO) FindById() (*RequestSaved, error) {
+func (r *RequestDAO) FindById(id string) (*RequestSaved, error) {
 	var request RequestSaved
-	row := r.db.QueryRow("SELECT id, requested_path, requested_method, matched_path, response_body, response_status FROM requests;")
+	row := r.db.QueryRow("SELECT id, requested_path, requested_method, matched_path, response_body, response_status FROM requests WHERE id=?;", id)
 	if err := request.Scan(row); err != nil {
 		return nil, err
 	}

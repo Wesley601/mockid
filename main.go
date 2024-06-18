@@ -36,8 +36,9 @@ func app(dbPath string) error {
 		return err
 	}
 	defer conn.Close()
-	requestHandler := handlers.NewRequestHandler(conn)
+
 	requestDAO := db.NewRequestDAO(conn)
+	requestHandler := handlers.NewRequestHandler(conn, requestDAO)
 	http.HandleFunc("GET /_/requests", requestHandler.Index)
 	http.HandleFunc("GET /_/requests/{id}", requestHandler.Show)
 	http.Handle("/", handlers.NewMapHandler(services.NewRequestMatcherLive(conn, requestDAO)))
