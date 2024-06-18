@@ -19,9 +19,9 @@ func init() {
 		}
 	}
 
-	// if err := db.EnsureDBFile(utils.Env("DB_PATH", "./data/local.db")); err != nil {
-	// 	log.Fatal(err)
-	// }
+	if err := db.EnsureDBFile(utils.Env("DB_PATH", "./data/local.db")); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func main() {

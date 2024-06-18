@@ -28,6 +28,9 @@ func StartDB(dbPath string) (*sql.DB, error) {
 }
 
 func EnsureDBFile(filePath string) error {
+	if _, err := os.Stat(filePath); err == nil {
+		return nil
+	}
 	s := strings.Split(filePath, "/")
 	if len(s) > 1 {
 		p, file := path.Join(s[:len(s)-1]...), s[len(s)-1]
