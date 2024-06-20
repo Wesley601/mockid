@@ -13,7 +13,7 @@ TODO
 - [x] dockerize the application
 - [x] refactor the application
 - [x] implement cached matcher
-- [] implement flush method
+- [x] implement flush method
 - [] be able to add more url mappings through the web interface
 - [] replace bootstrap for something more lightweight
 - [] improve match algorithm
