@@ -47,3 +47,8 @@ func (r *RequestDAO) List() ([]RequestSaved, error) {
 
 	return requests, nil
 }
+
+func (r *RequestDAO) Flush() error {
+	_, err := r.db.Exec("DELETE FROM requests;")
+	return err
+}

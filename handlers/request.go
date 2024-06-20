@@ -13,6 +13,7 @@ import (
 
 type RequestDAO interface {
 	FindById(id string) (*db.RequestSaved, error)
+	Flush() error
 	List() ([]db.RequestSaved, error)
 }
 
@@ -52,4 +53,15 @@ func (re *RequestHandler) Index(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	views.Base(views.Home(requests)).Render(r.Context(), w)
+}
+
+func (re *RequestHandler) Flush(w http.ResponseWriter, r *http.Request) {
+	err := re.dao.Flush()
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }

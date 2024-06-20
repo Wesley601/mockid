@@ -51,6 +51,7 @@ func app(dbPath string) error {
 	requestHandler := handlers.NewRequestHandler(conn, requestDAO)
 	http.HandleFunc("GET /_/requests", requestHandler.Index)
 	http.HandleFunc("GET /_/requests/{id}", requestHandler.Show)
+	http.HandleFunc("DELETE /_/requests/flush", requestHandler.Flush)
 	http.Handle("/", handlers.NewMapHandler(matcher))
 
 	log.Println("Server starting at :3000")

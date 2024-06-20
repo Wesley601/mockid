@@ -5,7 +5,16 @@ import "github.com/wesley601/mockid/db"
 
 templ Home(requests []db.RequestSaved) {
   <div>
-    <table class="table">
+  <div class="d-flex flex-row-reverse mb-3">
+    <button
+      class="btn btn-danger"
+      hx-trigger="click"
+      hx-delete="/_/requests/flush"
+      hx-target="#test"
+      hx-swap="delete"
+    >flush</button>
+  </div>
+    <table  class="table">
       <thead>
         <tr>
           <th scope="col">#</th>
@@ -15,7 +24,7 @@ templ Home(requests []db.RequestSaved) {
           <th scope="col"></th>
         </tr>
       </thead>
-      <tbody class="table-group-divider">
+      <tbody id="test" class="table-group-divider">
       for _, request := range requests {
         <tr>
           <th scope="row">{ fmt.Sprint(request.ID) }</th>
