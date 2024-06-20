@@ -22,7 +22,7 @@ func NewRequestMatcherCached(db *sql.DB, dao RequestDAO) (*RequestMatcherCached,
 		db:  db,
 		dao: dao,
 	}
-	paths, err := getMappingPath()
+	paths, err := GetMappingPath()
 	if err != nil {
 		return nil, err
 	}

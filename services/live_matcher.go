@@ -37,7 +37,7 @@ func NewRequestMatcherLive(db *sql.DB, dao RequestDAO) *RequestMatcherLive {
 }
 
 func (m *RequestMatcherLive) Match(r *http.Request) (*Resp, error) {
-	paths, err := getMappingPath()
+	paths, err := GetMappingPath()
 	if err != nil {
 		return nil, err
 	}

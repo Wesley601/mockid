@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 )
 
-func getMappingPath() ([]string, error) {
+func GetMappingPath() ([]string, error) {
 	var jsonPaths []string
 
 	err := filepath.Walk("./mocks/mappings/", func(path string, info fs.FileInfo, err error) error {

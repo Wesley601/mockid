@@ -9,6 +9,7 @@ import (
 
 	"github.com/wesley601/mockid/db"
 	"github.com/wesley601/mockid/views"
+	"github.com/wesley601/mockid/views/requests"
 )
 
 type RequestDAO interface {
@@ -42,17 +43,17 @@ func (re *RequestHandler) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.Show(*request).Render(r.Context(), w)
+	requests.Show(*request).Render(r.Context(), w)
 }
 
 func (re *RequestHandler) Index(w http.ResponseWriter, r *http.Request) {
-	requests, err := re.dao.List()
+	data, err := re.dao.List()
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
-	views.Base(views.Home(requests)).Render(r.Context(), w)
+	views.Base(requests.Home(data)).Render(r.Context(), w)
 }
 
 func (re *RequestHandler) Flush(w http.ResponseWriter, r *http.Request) {
