@@ -18,7 +18,6 @@ func (r Response) GetBody() ([]byte, error) {
 }
 
 func GetBody(bodyFileName string) ([]byte, error) {
-
 	fullPath := path.Join(utils.Must(os.Getwd()), "/mocks/__files/", bodyFileName)
 	response, err := os.ReadFile(fullPath)
 	if err != nil {

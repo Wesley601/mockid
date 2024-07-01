@@ -5,6 +5,8 @@ type Mappings struct {
 }
 
 type Mapping struct {
+	FileName string
+	Index    int
 	Request  Request  `json:"request"`
 	Response Response `json:"response"`
 }

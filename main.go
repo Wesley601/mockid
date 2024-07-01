@@ -49,9 +49,12 @@ func app(dbPath string) error {
 		matcher = services.NewRequestMatcherLive(conn, requestDAO)
 	}
 	requestHandler := handlers.NewRequestHandler(conn, requestDAO)
+	mappingHandler := handlers.NewMappingHandler()
 	http.HandleFunc("GET /_/requests", requestHandler.Index)
 	http.HandleFunc("GET /_/requests/{id}", requestHandler.Show)
 	http.HandleFunc("DELETE /_/requests/flush", requestHandler.Flush)
+	http.HandleFunc("GET /_/mappings", mappingHandler.Index)
+	http.HandleFunc("GET /_/mappings/{id}", mappingHandler.Show)
 	http.Handle("/", handlers.NewMapHandler(matcher))
 
 	log.Println("Server starting at :3000")

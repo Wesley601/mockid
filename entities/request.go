@@ -19,6 +19,14 @@ type Request struct {
 	QueryParameters map[string]QueryParam `json:"queryParameters"`
 }
 
+func (r Request) GetPath() string {
+	if r.URLPath != "" {
+		return r.URLPath
+	}
+
+	return r.URLPattern
+}
+
 func (r Request) Match(res *http.Request) bool {
 	if r.Method != res.Method {
 		return false
