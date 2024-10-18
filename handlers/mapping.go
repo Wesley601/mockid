@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/wesley601/mockid/entities"
 	"github.com/wesley601/mockid/services"
@@ -19,7 +20,33 @@ func NewMappingHandler() *MappingHandler {
 }
 
 func (re *MappingHandler) Show(w http.ResponseWriter, r *http.Request) {
-	mappings.Show().Render(r.Context(), w)
+	path := r.PathValue("filename")
+	index, err := strconv.Atoi(r.PathValue("index"))
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	file, err := os.ReadFile(path)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	var data entities.Mappings
+	err = json.Unmarshal(file, &data)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	for i, m := range data.Mappings {
+		if i == index {
+			m.FileName = path
+			mappings.Show(m).Render(r.Context(), w)
+			return
+		}
+	}
 }
 
 func (re *MappingHandler) Index(w http.ResponseWriter, r *http.Request) {

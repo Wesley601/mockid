@@ -19,7 +19,7 @@ type Scanner interface {
 }
 
 func (r *RequestSaved) Scan(row Scanner) error {
-	if err := row.Scan(&r.ID, &r.RequestedPath, &r.RequestedMethod, &r.MatchedPath, &r.ResponseBody, &r.ResponseStatus); err != nil {
+	if err := row.Scan(&r.ID, &r.RequestedPath, &r.RequestedMethod, &r.MatchedPath, &r.ResponseBody, &r.ResponseStatus, &r.CreatedAt); err != nil {
 		return fmt.Errorf("failed to scan a request row: %w", err)
 	}
 	return nil

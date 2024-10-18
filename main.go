@@ -54,7 +54,7 @@ func app(dbPath string) error {
 	http.HandleFunc("GET /_/requests/{id}", requestHandler.Show)
 	http.HandleFunc("DELETE /_/requests/flush", requestHandler.Flush)
 	http.HandleFunc("GET /_/mappings", mappingHandler.Index)
-	http.HandleFunc("GET /_/mappings/{id}", mappingHandler.Show)
+	http.HandleFunc("GET /_/mappings/{filename}/{index}", mappingHandler.Show)
 	http.Handle("/", handlers.NewMapHandler(matcher))
 
 	log.Println("Server starting at :3000")
